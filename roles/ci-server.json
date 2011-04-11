@@ -1,0 +1,28 @@
+{
+  "name": "ci-server",
+  "default_attributes": {
+  },
+  "json_class": "Chef::Role",
+  "run_list": [
+    "recipe[git::default]",
+    "recipe[ruby::default]",
+    "recipe[openssl::default]",
+    "recipe[jenkins::default]",
+    "recipe[php::default]",
+    "recipe[php::php5]",
+    "recipe[php::module_apc]",
+    "recipe[php::module_curl2]",
+    "recipe[php::pear]",
+    "recipe[php::module_memcached]",
+    "recipe[phpunit::default]",
+    "recipe[drush::head]",
+    "recipe[mysql::client]",
+    "recipe[mysql::server]",
+    "recipe[php::module_mysql]",
+    "recipe[postfix::default]"
+  ],
+  "description": "",
+  "chef_type": "role",
+  "override_attributes": {
+  }
+}
