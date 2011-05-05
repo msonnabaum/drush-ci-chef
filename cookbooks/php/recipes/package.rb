@@ -18,22 +18,50 @@
 # limitations under the License.
 #
 
-php_pkgs = value_for_platform(
+pkgs = value_for_platform(
   [ "centos", "redhat", "fedora" ] => {
-    "default" => %w{php php-devel php-cli php-pear}
+    "default" => %w{ php53 php53-devel php53-cli php-pear }
   },
-  "default" => %w{php5 php5-dev php5-cli php-pear}
+  [ "debian", "ubuntu" ] => {
+    "default" => %w{ php5-cgi php5 php5-dev php5-cli php-pear }
+  },
+  "default" => %w{ php5-cgi php5 php5-dev php5-cli php-pear }
 )
 
-php_pkgs.each do |pkg|
+pkgs.each do |pkg|
   package pkg do
-    action :upgrade
+    action :install
   end
 end
 
-template "#{node['php']['conf_dir']}/php.ini" do
-  source "php.ini.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+case node[:platform]
+when "centos", "redhat", "fedora"
+  template "#{node['php']['conf_dir']}/php.ini" do
+    source "php.ini.erb"
+    owner "root"
+    group "root"
+    mode "0644"
+  end
+
+when "debian","ubuntu"
+  template "#{node['php']['conf_dir']['apache2']}/php.ini" do
+    source "php-apache2.ini.erb"
+    owner "root"
+    group "root"
+    mode "0644"
+  end
+
+  template "#{node['php']['conf_dir']['cgi']}/php.ini" do
+    source "php-cgi.ini.erb"
+    owner "root"
+    group "root"
+    mode "0644"
+  end
+
+  template "#{node['php']['conf_dir']['cli']}/php.ini" do
+    source "php-cli.ini.erb"
+    owner "root"
+    group "root"
+    mode "0644"
+  end
 end

@@ -1,46 +1,47 @@
 {
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "description": "Installs and maintains php and php modules",
+  "long_description": "",
+  "conflicting": {
+  },
+  "version": "1.0.0",
   "providing": {
   },
-  "license": "Apache 2.0",
   "maintainer": "Opscode, Inc.",
   "replacing": {
   },
-  "maintainer_email": "cookbooks@opscode.com",
-  "groupings": {
-  },
-  "description": "Installs and maintains php and php modules",
-  "version": "0.9.1",
-  "recommendations": {
-  },
-  "attributes": {
-  },
+  "name": "php",
   "recipes": {
-    "php::php4": "Install packages for PHP version 4",
-    "php::module_sybase": "Install the php5-sybase package",
     "php::module_fpdf": "Install the php-fpdf package",
-    "php::php5": "Install php5 packages and php.ini config file",
-    "php::php5-cgi": "Install the php5-cgi package",
-    "php": "Empty, use one of the other recipes",
+    "php": "Installs php",
     "php::module_sqlite3": "Install the php5-sqlite3 package",
-    "php::module_curl2": "Install the php5-curl package",
-    "php::module_imap": "Install the php5-imap package",
     "php::module_ldap": "Install the php5-ldap package",
     "php::module_gd": "Install the php5-gd package",
     "php::module_apc": "Install the php5-apc package",
-    "php::module_mcrypt": "Install the php5-mcrypt package",
-    "php::module_memcached": "Install the php5-memcached package",
+    "php::package": "Installs php using packages.",
     "php::module_memcache": "Install the php5-memcache package",
     "php::module_mysql": "Install the php5-mysql package",
     "php::module_fileinfo": "Install the php5-fileinfo package",
     "php::module_curl": "Install the php5-curl package",
-    "php::pear": "Install the php-pear package",
     "php::module_pgsql": "Install the php5-pgsql packag",
-    "php::module_imagemagick": "Install the php5-imagemagick package"
+    "php::source": "Installs php from source."
   },
-  "suggestions": {
+  "maintainer_email": "cookbooks@opscode.com",
+  "groupings": {
+  },
+  "attributes": {
   },
   "dependencies": {
-    "apache2": [
+    "xml": [
+
+    ],
+    "mysql": [
+
+    ],
+    "build-essential": [
 
     ]
   },
@@ -54,9 +55,6 @@
     "centos": [
 
     ],
-    "suse": [
-
-    ],
     "ubuntu": [
 
     ],
@@ -64,8 +62,5 @@
 
     ]
   },
-  "name": "php",
-  "long_description": "",
-  "conflicting": {
-  }
+  "license": "Apache 2.0"
 }
