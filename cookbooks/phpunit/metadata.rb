@@ -1,0 +1,7 @@
+maintainer       "Opscode, Inc."
+maintainer_email "cookbooks@opscode.com"
+license          "Apache 2.0"
+description      "Installs phpunit"
+version          "0.9.1"
+depends          "php::pear"
+recipe           "phpunit", "Installs phpunit unit testing suite"

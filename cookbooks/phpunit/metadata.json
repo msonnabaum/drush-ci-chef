@@ -1,0 +1,33 @@
+{
+  "providing": {
+  },
+  "license": "Apache 2.0",
+  "maintainer": "Opscode, Inc.",
+  "replacing": {
+  },
+  "maintainer_email": "cookbooks@opscode.com",
+  "groupings": {
+  },
+  "description": "Installs phpunit",
+  "version": "0.9.1",
+  "recommendations": {
+  },
+  "attributes": {
+  },
+  "recipes": {
+    "phpunit": "Installs phpunit unit testing suite"
+  },
+  "suggestions": {
+  },
+  "dependencies": {
+    "php::pear": [
+
+    ]
+  },
+  "platforms": {
+  },
+  "name": "phpunit",
+  "long_description": "",
+  "conflicting": {
+  }
+}
