@@ -1,0 +1,2 @@
+# jenkins http proxy
+-A FWR -p tcp -m tcp --dport <%= node[:jenkins][:http_proxy][:listen_ports] %> -j ACCEPT
