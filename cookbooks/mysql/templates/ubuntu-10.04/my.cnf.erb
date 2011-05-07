@@ -112,16 +112,6 @@ max_binlog_size         = 100M
 #binlog_do_db           = include_database_name
 #binlog_ignore_db       = include_database_name
 
-# * From Acquia Hosting config
-log-bin                         = binlog
-report-host 			= <%= node[:fqdn] %>
-expire_logs_days                = 5
-relay-log                       = relaylog
-relay-log-index                 = relay-index
-auto_increment_increment        = 5
-replicate-wild-ignore-table     = mysql.ibbackup_binlog_marker
-
-
 #
 # * InnoDB
 #
