@@ -1230,7 +1230,7 @@ mysql.default_password =
 
 ; Maximum time (in seconds) for connect timeout. -1 means no limit
 ; http://php.net/mysql.connect-timeout
-mysql.connect_timeout = 60
+mysql.connect_timeout = -1
 
 ; Trace mode. When trace_mode is active (=On), warnings for table/index scans and
 ; SQL-Errors will be displayed.
@@ -1890,10 +1890,6 @@ ldap.max_links = -1
 
 [dba]
 ;dba.default_handler=
-
-<% node[:php][:directives].each do |k,v| -%>
-<%= "#{k}=\"#{v}\"" %>
-<% end -%>
 
 ; Local Variables:
 ; tab-width: 4
