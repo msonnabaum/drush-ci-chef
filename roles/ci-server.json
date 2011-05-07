@@ -1,24 +1,47 @@
 {
   "name": "ci-server",
   "default_attributes": {
+    "mysql": {
+      "tunable": {
+        "innodb_buffer_pool_size": "16M"
+      },
+      "bind_address": "127.0.0.1"
+    },
+    "jenkins": {
+      "http_proxy": {
+        "host_name": "ci.drush.ws",
+        "variant": "apache2"
+      }
+    },
+    "php": {
+      "directives": {
+        "mysql.connect_timeout": "-1"
+      }
+    }
   },
   "json_class": "Chef::Role",
   "run_list": [
+    "recipe[apt]",
     "recipe[git::default]",
     "recipe[ruby::default]",
     "recipe[openssl::default]",
+    "recipe[java]",
+    "recipe[iptables]",
+    "recipe[iptables::ssh]",
     "recipe[jenkins::default]",
+    "recipe[apache2]",
+    "recipe[apache2::mod_php5]",
     "recipe[php::default]",
-    "recipe[php::php5]",
     "recipe[php::module_apc]",
+    "recipe[php::module_curl]",
     "recipe[php::module_curl2]",
-    "recipe[php::pear]",
     "recipe[php::module_memcached]",
     "recipe[phpunit::default]",
-    "recipe[drush::head]",
+    "recipe[xml]",
     "recipe[mysql::client]",
     "recipe[mysql::server]",
     "recipe[php::module_mysql]",
+    "recipe[jenkins::proxy_apache2]",
     "recipe[postfix::default]"
   ],
   "description": "",
