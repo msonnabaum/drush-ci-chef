@@ -21,7 +21,7 @@ case node[:platform]
 when "debian", "ubuntu"
   package "libapache2-mod-php5" do
     action :install
-  end  
+  end
 when "arch"
   package "php-apache" do
     action :install
@@ -35,3 +35,13 @@ when "centos", "redhat", "fedora"
 end
 
 apache_module "php5"
+
+case node[:platform]
+when "debian","ubuntu"
+  template "#{node['apache']['php']['conf_dir']}/php.ini" do
+    source "mods/php.ini.erb"
+    owner "root"
+    group "root"
+    mode "0644"
+  end
+end

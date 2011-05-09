@@ -49,6 +49,11 @@ else
   set[:apache][:cache_dir] = "/var/cache/apache2"
 end
 
+case platform
+when "debian", "ubuntu"
+  default['apache']['php']['conf_dir'] = '/etc/php5/apache2'
+end
+
 ###
 # These settings need the unless, since we want them to be tunable,
 # and we don't want to override the tunings.

@@ -44,13 +44,6 @@ when "centos", "redhat", "fedora"
   end
 
 when "debian","ubuntu"
-  template "#{node['php']['conf_dir']['apache2']}/php.ini" do
-    source "php-apache2.ini.erb"
-    owner "root"
-    group "root"
-    mode "0644"
-  end
-
   template "#{node['php']['conf_dir']['cgi']}/php.ini" do
     source "php-cgi.ini.erb"
     owner "root"
