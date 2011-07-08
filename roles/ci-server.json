@@ -15,7 +15,8 @@
     },
     "php": {
       "directives": {
-        "mysql.connect_timeout": "-1"
+        "mysql.connect_timeout": "-1",
+        "memory_limit": "10M"
       }
     }
   },
