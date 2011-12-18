@@ -64,6 +64,17 @@ node[:jenkins][:server][:plugins].each do |name|
     backup false
     owner node[:jenkins][:server][:user]
     group node[:jenkins][:server][:group]
+    action :nothing
+  end
+
+  http_request "HEAD #{node[:jenkins][:mirror]}/latest/#{name}.hpi" do
+    message ""
+    url "#{node[:jenkins][:mirror]}/latest/#{name}.hpi"
+    action :head
+    if File.exists?("#{node[:jenkins][:server][:home]}/plugins/#{name}.hpi")
+      headers "If-Modified-Since" => File.mtime("#{node[:jenkins][:server][:home]}/plugins/#{name}.hpi").httpdate
+    end
+    notifies :create, resources(:remote_file => "#{node[:jenkins][:server][:home]}/plugins/#{name}.hpi"), :immediately
   end
 end
 
@@ -82,9 +93,10 @@ when "ubuntu", "debian"
     package "openjdk-6-jre"
 
     package "psmisc"
+    key_url = "http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key"
 
     remote_file "#{tmp}/jenkins-ci.org.key" do
-      source "#{node[:jenkins][:mirror]}/debian/jenkins-ci.org.key"
+      source "#{key_url}"
     end
 
     execute "add-jenkins-key" do
@@ -93,19 +105,15 @@ when "ubuntu", "debian"
     end
 
   when "ubuntu"
-    package_provider = Chef::Provider::Package::Apt
-    package "curl"
-    key_url = "http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key"
-
     include_recipe "apt"
     include_recipe "java"
 
-    cookbook_file "/etc/apt/sources.list.d/jenkins.list"
-
-    execute "add-jenkins-key" do
-      command "curl #{key_url} | apt-key add -"
-      action :nothing
-      notifies :run, "execute[apt-get update]", :immediately
+    apt_repository "jenkins" do
+      uri "http://pkg.jenkins-ci.org/debian"
+      distribution "binary/"
+      components [""]
+      key "http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key"
+      action :add
     end
   end
 
@@ -115,6 +123,7 @@ when "ubuntu", "debian"
 
 when "centos", "redhat"
   #see http://jenkins-ci.org/redhat/
+  key_url = "http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key"
 
   remote = "#{node[:jenkins][:mirror]}/latest/redhat/jenkins.rpm"
   package_provider = Chef::Provider::Package::Rpm
@@ -122,7 +131,7 @@ when "centos", "redhat"
   install_starts_service = false
 
   execute "add-jenkins-key" do
-    command "rpm --import #{node[:jenkins][:mirror]}/redhat/jenkins-ci.org.key"
+    command "rpm --import #{key_url}"
     action :nothing
   end
 
@@ -145,6 +154,26 @@ ruby_block "netstat" do
   action :nothing
 end
 
+ruby_block "block_until_operational" do
+  block do
+    until IO.popen("netstat -lnt").entries.select { |entry|
+        entry.split[3] =~ /:#{node[:jenkins][:server][:port]}$/
+      }.size == 1
+      Chef::Log.debug "service[jenkins] not listening on port #{node.jenkins.server.port}"
+      sleep 1
+    end
+
+    loop do
+      url = URI.parse("#{node.jenkins.server.url}/job/test/config.xml")
+      res = Chef::REST::RESTRequest.new(:GET, url, nil).call
+      break if res.kind_of?(Net::HTTPSuccess) or res.kind_of?(Net::HTTPNotFound)
+      Chef::Log.debug "service[jenkins] not responding OK to GET /job/test/config.xml #{res.inspect}"
+      sleep 1
+    end
+  end
+  action :nothing
+end
+
 service "jenkins" do
   supports [ :stop, :start, :restart, :status ]
   #"jenkins status" will exit(0) even when the process is not running
@@ -157,11 +186,11 @@ if node.platform == "ubuntu"
     command "echo w00t"
     notifies :stop, "service[jenkins]", :immediately
     notifies :create, "ruby_block[netstat]", :immediately #wait a moment for the port to be released
-    notifies :run, "execute[add-jenkins-key]", :immediately
     notifies :install, "package[jenkins]", :immediately
     unless install_starts_service
       notifies :start, "service[jenkins]", :immediately
     end
+    notifies :create, "ruby_block[block_until_operational]", :immediately
     creates "/usr/share/jenkins/jenkins.war"
   end
 else
@@ -202,12 +231,13 @@ package "jenkins" do
   action :nothing
 end
 
-#restart if this run only added new plugins
+# restart if this run only added new plugins
 log "plugins updated, restarting jenkins" do
   #ugh :restart does not work, need to sleep after stop.
   notifies :stop, "service[jenkins]", :immediately
   notifies :create, "ruby_block[netstat]", :immediately
   notifies :start, "service[jenkins]", :immediately
+  notifies :create, "ruby_block[block_until_operational]", :immediately
   only_if do
     if File.exists?(pid_file)
       htime = File.mtime(pid_file)
@@ -224,15 +254,4 @@ when "nginx"
   include_recipe "jenkins::proxy_nginx"
 when "apache2"
   include_recipe "jenkins::proxy_apache2"
-end
-
-if platform?("redhat","centos","debian","ubuntu")
-  include_recipe "iptables"
-  iptables_rule "port_jenkins" do
-    if node[:jenkins][:iptables_allow] == "enable"
-      enable true
-    else
-      enable false
-    end
-  end
 end

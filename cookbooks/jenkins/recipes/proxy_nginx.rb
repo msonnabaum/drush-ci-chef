@@ -54,14 +54,3 @@ nginx_site "jenkins.conf" do
     enable false
   end
 end
-
-if platform?("redhat","centos","debian","ubuntu")
-  include_recipe "iptables"
-  iptables_rule "port_jenkins_proxy" do
-    if node[:jenkins][:iptables_allow] == "enable"
-      enable true
-    else
-      enable false
-    end
-  end
-end

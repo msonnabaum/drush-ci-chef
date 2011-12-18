@@ -1,8 +1,6 @@
-#
-# Cookbook Name::phpunit
-# Recipe:: source
-#
-# Copyright 2010, Opscode, Inc.
+# Author:: Mark Sonnabaum <mark.sonnabaum@acquia.com>
+# Cookbook Name::  phpunit
+# Recipe:: default
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
 include_recipe "php"
 
@@ -26,8 +23,16 @@ channels.each do |chan|
   end
 end
 
+php_pear "PEAR" do
+  cur_version = `pear -V| head -1| awk -F': ' '{print $2}'`
+  action :upgrade
+  # This feels super ghetto. Open to improvements.
+  not_if { Gem::Version.new(cur_version) > Gem::Version.new('1.9.0') }
+end
+
 php_pear "PHPUnit" do
   channel "phpunit"
+  version "3.6.4"
   action :install
 end
 
