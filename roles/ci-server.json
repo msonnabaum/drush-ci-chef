@@ -11,6 +11,9 @@
       "http_proxy": {
         "host_name": "ci.drush.ws",
         "variant": "apache2"
+      },
+      "server": {
+        "plugins": ["git", "xunit"]
       }
     },
     "php": {
@@ -43,7 +46,8 @@
     "recipe[mysql::server]",
     "recipe[php::module_mysql]",
     "recipe[jenkins::proxy_apache2]",
-    "recipe[postfix::default]"
+    "recipe[postfix::default]",
+    "recipe[ci-drush::jenkins_jobs]"
   ],
   "description": "",
   "chef_type": "role",
