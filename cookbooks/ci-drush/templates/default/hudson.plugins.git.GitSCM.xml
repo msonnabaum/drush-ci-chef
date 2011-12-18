@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.plugins.git.GitSCM_-DescriptorImpl>
+  <helpRedirect/>
+  <generation>15</generation>
+  <globalConfigName>DrushJenkins</globalConfigName>
+  <globalConfigEmail>jenkins@drush.ws</globalConfigEmail>
+</hudson.plugins.git.GitSCM_-DescriptorImpl>
